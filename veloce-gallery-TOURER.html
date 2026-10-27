@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#08090b">
+  <title>Galerie | VÉLOCE EV-X</title>
+  <style>
+    :root {
+      --bg: #08090b;
+      --panel: #111317;
+      --text: #f5f6f7;
+      --muted: #9b9fa8;
+      --line: rgba(255,255,255,.12);
+      --blue: #55b9ff;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; }
+    .topbar {
+      min-height: 76px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 18px clamp(20px, 5vw, 76px);
+      border-bottom: 1px solid var(--line);
+      background: rgba(8,9,11,.94);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      font-size: 1.15rem;
+      font-weight: 800;
+      letter-spacing: .32em;
+    }
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      display: grid;
+      place-items: center;
+      border: 1px solid #fff;
+      transform: rotate(45deg);
+      font-size: .85rem;
+      letter-spacing: 0;
+    }
+    .brand-mark span { transform: rotate(-45deg); }
+    nav { display: flex; align-items: center; gap: clamp(14px, 3vw, 34px); }
+    nav a {
+      color: #c5c8ce;
+      font-size: .78rem;
+      text-transform: uppercase;
+      letter-spacing: .12em;
+      transition: color .2s;
+    }
+    nav a:hover, nav a.active { color: white; }
+    .nav-cta {
+      border: 1px solid rgba(255,255,255,.55);
+      padding: 11px 15px;
+    }
+    .hero {
+      position: relative;
+      min-height: 420px;
+      display: flex;
+      align-items: end;
+      overflow: hidden;
+      padding: clamp(35px, 7vw, 90px);
+      background:
+        linear-gradient(90deg, rgba(5,6,8,.96) 0%, rgba(5,6,8,.75) 43%, rgba(5,6,8,.12) 100%),
+        linear-gradient(0deg, rgba(8,9,11,.78), transparent 55%),
+        url("Véloce Tourer _ élégance électrique.png") center 58% / cover no-repeat,
+        #1b1d21;
+      border-bottom: 1px solid var(--line);
+    }
+    .hero-content { max-width: 670px; position: relative; z-index: 1; }
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      color: var(--blue);
+      font-size: .72rem;
+      font-weight: 700;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+    }
+    .eyebrow::before { content: ""; width: 34px; height: 1px; background: var(--blue); }
+    h1 {
+      margin: 18px 0 12px;
+      font-size: clamp(3rem, 8vw, 6.5rem);
+      line-height: .92;
+      letter-spacing: -.065em;
+      font-weight: 800;
+    }
+    h1 span { color: #aeb3bb; font-weight: 300; }
+    .hero p { max-width: 520px; color: #c3c6cc; line-height: 1.7; font-size: 1rem; }
+    .hero-meta {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+      color: #e8e9eb;
+      font-size: .72rem;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+    .hero-meta span::before { content: "✦"; color: var(--blue); margin-right: 9px; }
+    main { padding: clamp(36px, 6vw, 76px) clamp(20px, 5vw, 76px); }
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+    .section-head h2 {
+      margin: 10px 0 0;
+      font-size: clamp(1.8rem, 4vw, 3rem);
+      letter-spacing: -.04em;
+    }
+    .section-head p { margin: 0; color: var(--muted); font-size: .9rem; }
+    .filters { display: flex; gap: 8px; flex-wrap: wrap; margin: 0 0 28px; }
+    .filter {
+      border: 1px solid var(--line);
+      background: transparent;
+      color: #b9bdc5;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-radius: 2px;
+      font-size: .78rem;
+      transition: .2s ease;
+    }
+    .filter:hover, .filter.active {
+      color: #fff;
+      border-color: var(--blue);
+      background: rgba(85,185,255,.1);
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 17px;
+    }
+    .photo-card {
+      position: relative;
+      min-width: 0;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      cursor: pointer;
+      text-align: left;
+      padding: 0;
+      color: white;
+      aspect-ratio: 4 / 3;
+    }
+    .photo-card.featured { grid-column: span 2; aspect-ratio: 8 / 4.2; }
+    .photo-card img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .55s cubic-bezier(.2,.7,.2,1), opacity .3s;
+    }
+    .photo-card:hover img { transform: scale(1.045); opacity: .78; }
+    .photo-card::after {
+      content: "＋";
+      position: absolute;
+      top: 15px; right: 16px;
+      display: grid; place-items: center;
+      width: 35px; height: 35px;
+      border: 1px solid rgba(255,255,255,.55);
+      border-radius: 50%;
+      background: rgba(0,0,0,.28);
+      opacity: 0;
+      transition: opacity .2s;
+    }
+    .photo-card:hover::after { opacity: 1; }
+    .photo-info {
+      position: absolute;
+      inset: auto 0 0;
+      padding: 38px 20px 18px;
+      background: linear-gradient(transparent, rgba(0,0,0,.88));
+    }
+    .photo-info small {
+      display: block;
+      margin-bottom: 7px;
+      color: #aeb5bf;
+      font-size: .66rem;
+      letter-spacing: .16em;
+      text-transform: uppercase;
+    }
+    .photo-info strong { font-size: 1rem; font-weight: 600; }
+    .photo-card[hidden] { display: none; }
+    .note {
+      margin-top: 20px;
+      color: #777e88;
+      font-size: .78rem;
+      line-height: 1.6;
+    }
+    .footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding: 25px clamp(20px, 5vw, 76px);
+      border-top: 1px solid var(--line);
+      color: #8f949d;
+      font-size: .75rem;
+    }
+    .footer strong { color: #e8e9eb; letter-spacing: .2em; }
+    .lightbox {
+      position: fixed;
+      inset: 0;
+      z-index: 10;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 28px;
+      background: rgba(0,0,0,.92);
+    }
+    .lightbox.open { display: flex; }
+    .lightbox img { max-width: min(1100px, 90vw); max-height: 80vh; object-fit: contain; }
+    .lightbox-caption { position: absolute; left: 5vw; bottom: 4vh; color: #fff; }
+    .lightbox-caption small { display: block; margin-bottom: 6px; color: var(--blue); letter-spacing: .15em; text-transform: uppercase; }
+    .close-lightbox {
+      position: absolute; top: 22px; right: 28px;
+      border: 1px solid rgba(255,255,255,.4);
+      color: white; background: transparent; cursor: pointer;
+      width: 44px; height: 44px; font-size: 1.5rem;
+    }
+    @media (max-width: 800px) {
+      .topbar { align-items: flex-start; flex-direction: column; }
+      nav { width: 100%; flex-wrap: wrap; }
+      .hero { min-height: 390px; background-position: 58% center; }
+      .gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 11px; }
+      .photo-card.featured { grid-column: span 2; }
+      .section-head { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 480px) {
+      .brand { font-size: .95rem; }
+      nav a { font-size: .68rem; }
+      .gallery { grid-template-columns: 1fr; }
+      .photo-card.featured { grid-column: auto; aspect-ratio: 4 / 3; }
+      .photo-card { aspect-ratio: 4 / 3; }
+      .hero { min-height: 370px; }
+      .hero p { font-size: .9rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="VÉLOCE, accueil">
+      <span class="brand-mark"><span>V</span></span>
+      <span>VÉLOCE</span>
+    </a>
+    <nav aria-label="Navigation principale">
+      <a href="#galerie" class="active">Galerie</a>
+     
+      <a href="#galerie" class="nav-cta">Découvrir le TOURER ↗</a>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="hero-content">
+      <div class="eyebrow">VÉLOCE Motors · Collection</div>
+      <h1>TOURER <span>Gallery.</span></h1>
+      <p>Chaque ligne a une intention. Découvrez la VÉLOCE TOURER sous tous ses angles, de sa silhouette sculptée à son cockpit électrique.</p>
+      <div class="hero-meta">
+        <span>100 % électrique</span>
+        <span>Design haute performance</span>
+      </div>
+    </div>
+  </section>
+
+  <main id="galerie">
+    <div class="section-head">
+      <div>
+        <div class="eyebrow">Explorer les détails</div>
+        <h2>La galerie photo</h2>
+      </div>
+      <p>04 photographies · VÉLOCE TOURER</p>
+    </div>
+
+    <div class="filters" role="group" aria-label="Filtrer les photographies">
+      <button class="filter active" data-filter="all" aria-pressed="true">Toutes les photos</button>
+      <button class="filter" data-filter="exterior" aria-pressed="false">Extérieur</button>
+      <button class="filter" data-filter="interior" aria-pressed="false">Intérieur</button>
+    </div>
+
+    <div class="gallery">
+      <button class="photo-card featured" data-category="exterior" data-title="Vue avant trois-quarts" data-subtitle="Extérieur · 01" data-full="VÉLOCE EV-X, hypercar électrique futuriste.png">
+        <img src="Véloce Tourer _ élégance électrique.png" alt="VÉLOCE EV-X noire, vue avant trois-quarts" onerror="this.style.opacity='.12'">
+        <span class="photo-info"><small>Extérieur · 01</small><strong>Vue avant trois-quarts</strong></span>
+      </button>
+      <button class="photo-card" data-category="exterior" data-title="Vue arrière" data-subtitle="Extérieur · 02" data-full="Véloce EV-X _ hypercar électrique futuriste.png">
+        <img src="VÉLOCE TOURER, élégance électrique.png" alt="VÉLOCE EV-X vue arrière, éclairage LED rouge" onerror="this.style.opacity='.12'">
+        <span class="photo-info"><small>Extérieur · 02</small><strong>Vue arrière</strong></span>
+      </button>
+      <button class="photo-card" data-category="interior" data-title="Cockpit numérique" data-subtitle="Intérieur · 03" data-full="Habitacle futuriste VÉLOCE aux accents bleus.png">
+        <img src="Cockpit futuriste VÉLOCE illuminé de bleu.png" alt="Cockpit numérique de la VÉLOCE EV-X" onerror="this.style.opacity='.12'">
+        <span class="photo-info"><small>Intérieur · 03</small><strong>Cockpit numérique</strong></span>
+      </button>
+      <button class="photo-card" data-category="interior" data-title="Habitacle et sièges sport" data-subtitle="Intérieur · 04" data-full="Cockpit futuriste VÉLOCE aux accents bleus.png">
+        <img src="Habitacle futuriste VÉLOCE illuminé de bleu.png" alt="Habitacle sport noir avec détails bleus" onerror="this.style.opacity='.12'">
+        <span class="photo-info"><small>Intérieur · 04</small><strong>Habitacle et sièges sport</strong></span>
+      </button>
+    </div>
+    
+  </main>
+
+  <footer class="footer">
+    <strong>VÉLOCE</strong>
+    <span>© 2026 VÉLOCE Motors · Concept fictif</span>
+    <span>Designed for the electric era.</span>
+  </footer>
+
+  <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="Photo agrandie">
+    <button class="close-lightbox" id="closeLightbox" aria-label="Fermer">×</button>
+    <img id="lightboxImage" src="" alt="">
+    <div class="lightbox-caption">
+      <small id="lightboxSubtitle"></small>
+      <strong id="lightboxTitle"></strong>
+    </div>
+  </div>
+
+  <script>
+    const filterButtons = document.querySelectorAll(".filter");
+    const cards = document.querySelectorAll(".photo-card");
+
+    filterButtons.forEach(button => {
+      button.addEventListener("click", () => {
+        const filter = button.dataset.filter;
+        filterButtons.forEach(item => {
+          const selected = item === button;
+          item.classList.toggle("active", selected);
+          item.setAttribute("aria-pressed", String(selected));
+        });
+        cards.forEach(card => {
+          card.hidden = filter !== "all" && card.dataset.category !== filter;
+        });
+      });
+    });
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImage = document.getElementById("lightboxImage");
+    const lightboxTitle = document.getElementById("lightboxTitle");
+    const lightboxSubtitle = document.getElementById("lightboxSubtitle");
+    const closeLightbox = document.getElementById("closeLightbox");
+
+    function closeViewer() {
+      lightbox.classList.remove("open");
+      document.body.style.overflow = "";
+    }
+
+    cards.forEach(card => {
+      card.addEventListener("click", () => {
+        const image = card.querySelector("img");
+        lightboxImage.src = card.dataset.full;
+        lightboxImage.alt = image.alt;
+        lightboxTitle.textContent = card.dataset.title;
+        lightboxSubtitle.textContent = card.dataset.subtitle;
+        lightbox.classList.add("open");
+        document.body.style.overflow = "hidden";
+        closeLightbox.focus();
+      });
+    });
+
+    closeLightbox.addEventListener("click", closeViewer);
+    lightbox.addEventListener("click", event => {
+      if (event.target === lightbox) closeViewer();
+    });
+    document.addEventListener("keydown", event => {
+      if (event.key === "Escape") closeViewer();
+    });
+  </script>
+</body>
+</html>
